@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
 import "./globals.css"
-
+import "./app.css"
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import SwapText from "@/components/animata/text/swap-text";

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css"
-
+import "./app.css"
 import AnimatedBackground from "@/components/animata/background/animated-background";
 import AuthenticatorWrapper from "./authenticator-wrapper";
 import "@aws-amplify/ui-react/styles.css";
@@ -21,7 +21,7 @@ export default function RootLayout({
 
       <html lang="en">
       <body >
-      <div className="absolute"><AnimatedBackground/></div>
+
       <main >
           <AuthenticatorWrapper>{children}</AuthenticatorWrapper>
       </main>
