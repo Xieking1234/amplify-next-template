@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./app.css";
+import "./globals.css"
 
+import AnimatedBackground from "@/components/animata/background/animated-background";
 import AuthenticatorWrapper from "./authenticator-wrapper";
 import "@aws-amplify/ui-react/styles.css";
 const inter = Inter({ subsets: ["latin"] });
@@ -19,11 +20,13 @@ export default function RootLayout({
   return (
 
       <html lang="en">
-      <body>
-      <AuthenticatorWrapper>
-        {children}
-      </AuthenticatorWrapper>
+      <body >
+      <div className="absolute"><AnimatedBackground/></div>
+      <main >
+          <AuthenticatorWrapper>{children}</AuthenticatorWrapper>
+      </main>
       </body>
+
       </html>
   );
 }
