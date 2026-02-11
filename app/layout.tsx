@@ -1,6 +1,10 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./app.css";
+import AnimatedBackground from "@/components/animata/background/animated-background";
+import "./globals.css"
+import "@/amplify/configure";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +20,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className=" absolute ">
+          <AnimatedBackground />
+        </div>
+        <main>
+          {children}
+        </main>
+      </body>
     </html>
   );
 }
