@@ -1,6 +1,6 @@
 "use client"
 import { Amplify } from "aws-amplify";
-import outputs from "@/amplify/amplify_outputs.json";
+import outputs from "@/amplify_outputs.json";
 
 Amplify.configure(outputs)
 import FlipCard from "@/components/animata/card/flip-card";
@@ -98,8 +98,10 @@ export default function App() {
                           url="https://www.leeds.ac.uk"
                       />
                   </div>
+                    <div className="flex justify-center gap-10 mt-20 mb-20">
+                        <SearchDropdown />
+                    </div>
 
-                  <SearchDropdown />
 
 
               </PageWrapper>

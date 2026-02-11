@@ -4,7 +4,7 @@ import { generateClient } from "aws-amplify/data";
 import type { Schema } from "./data/resource";
 
 const outputs = JSON.parse(
-    readFileSync("./amplify_outputs.json", "utf8")
+    readFileSync("../amplify_outputs.json", "utf8")
 );
 
 Amplify.configure(outputs);

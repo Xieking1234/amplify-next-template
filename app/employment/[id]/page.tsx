@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
 import { Amplify } from "aws-amplify";
-import outputs from "@/amplify/amplify_outputs.json";
+import outputs from "@/amplify_outputs.json";
 import TextBorderAnimation from "@/components/animata/text/text-border-animation";
 import UnderlineHoverText from "@/components/animata/text/underline-hover-text";
 import PageWrapper from "@/components/animata/pagewrapper/page-wrapper";
