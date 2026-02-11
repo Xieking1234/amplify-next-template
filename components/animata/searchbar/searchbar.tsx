@@ -32,7 +32,7 @@ export default function SearchDropdown() {
         }
 
         const filtered = allData.filter((item) =>
-            `${item.uniName} ${item.uniCourse}`
+            `${item.uniName} ${item.uniCourse} ${item.mode}`
                 .toLowerCase()
                 .includes(query.toLowerCase())
         );
@@ -67,6 +67,7 @@ export default function SearchDropdown() {
                         >
                             <span className="font-medium">{item.uniName}</span>
                             <span className="text-gray-600">{item.uniCourse}</span>
+                            <span className="text-gray-600">{item.mode}</span>
                         </div>
                     ))}
                 </div>
