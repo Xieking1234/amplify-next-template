@@ -12,6 +12,7 @@ const schema = a.schema({
       uniId: a.string(),
       uniName: a.string(),
       uniCourse: a.string(),
+      mode: a.string(),
       employment: a.customType({
           workOnly: a.string(),
           responseRate: a.string(),
