@@ -1,15 +1,19 @@
-import { groqKey } from "@/amplify/backend"; // path may vary
+
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { uni, course, employment } = body;
 
-        const apiKey = await groqKey;
+        // ✅ USE THIS:
+        const apiKey = process.env.GROQ_API_KEY;
 
         if (!apiKey) {
-            throw new Error("GROQ_API_KEY secret is missing");
+            console.error("Environment variable GROQ_API_KEY is not set");
+            return Response.json({ error: "Server configuration error" }, { status: 500 });
         }
+
+        // ... rest of your fetch logic
 
         const prompt = `
 Generate insights about graduate outcomes.
