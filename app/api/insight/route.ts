@@ -1,9 +1,11 @@
+import { groqKey } from "@/amplify/backend";
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { uni, course, employment } = body;
 
-        const apiKey = process.env.GROQ_API_KEY;
+        const apiKey = await groqKey
 
         if (!apiKey) {
             throw new Error("Missing GROQ_API_KEY environment variable");
