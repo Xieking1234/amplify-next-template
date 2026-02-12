@@ -5,7 +5,7 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { uni, course, employment } = body;
 
-        const apiKey = await groqKey);
+        const apiKey = await groqKey;
 
         if (!apiKey) {
             throw new Error("GROQ_API_KEY secret is missing");
