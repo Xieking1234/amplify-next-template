@@ -25,7 +25,7 @@ export default function RootLayout({
           <AnimatedBackground />
         </div>
         <main>
-          <AnimatedBackground />
+          <InspectorShield />
           {children}
         </main>
       </body>
