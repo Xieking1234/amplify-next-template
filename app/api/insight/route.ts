@@ -1,32 +1,13 @@
-import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
-
 export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { uni, course, employment } = body;
 
-        // Load Groq API key from Secrets Manager
-        const secrets = new SecretsManagerClient({});
-        const secret = await secrets.send(
-            new GetSecretValueCommand({ SecretId: "deepseek-api-key" })
-        );
-
-        if (!secret.SecretString) {
-            throw new Error("SecretString is undefined");
-        }
-
-        // Parse secret (supports any JSON shape)
-        let apiKey: string | undefined;
-        try {
-            const parsed = JSON.parse(secret.SecretString);
-            const firstKey = Object.keys(parsed)[0];
-            apiKey = parsed[firstKey];
-        } catch {
-            apiKey = secret.SecretString;
-        }
+        // Load Groq API key from environment variables
+        const apiKey = process.env.GROQ_API_KEY;
 
         if (!apiKey) {
-            throw new Error("Could not extract Groq API key");
+            throw new Error("Missing GROQ_API_KEY environment variable");
         }
 
         const prompt = `
@@ -43,7 +24,7 @@ Employment Data:
 - Response Rate: ${employment.responseRate}
 
 Provide a clear, friendly summary for a prospective student.
-    `;
+        `;
 
         // Call Groq's OpenAI-compatible API
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
