@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import AnimatedBackground from "@/components/animata/background/animated-background";
 import "./globals.css"
 import "@/amplify/configure";
-
+import InspectorShield from '@/components/inspectorshield';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +25,7 @@ export default function RootLayout({
           <AnimatedBackground />
         </div>
         <main>
+          <AnimatedBackground />
           {children}
         </main>
       </body>
