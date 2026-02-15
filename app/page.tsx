@@ -7,12 +7,20 @@ import FlipCard from "@/components/animata/card/flip-card";
 import SwapText from "@/components/animata/text/swap-text";
 import PageWrapper from "@/components/animata/pagewrapper/page-wrapper";
 import SearchDropdown from "@/components/animata/searchbar/searchbar";
+import {useAuthenticator} from "@aws-amplify/ui-react";
 export default function App() {
-
+    const { signOut } = useAuthenticator();
   return (
       <main>
           <div>
-
+              <div className="fixed top-5 right-5 z-50">
+                  <button
+                      onClick={signOut}
+                      className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full hover:bg-red-500/20 hover:border-red-500/50 transition-all text-sm font-medium"
+                  >
+                      Sign Out
+                  </button>
+              </div>
 
 
               <PageWrapper>

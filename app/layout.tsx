@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import AnimatedBackground from "@/components/animata/background/animated-background";
 import "./globals.css"
-import "@/amplify/configure";
 import InspectorShield from '@/components/inspectorshield';
-
+import AmplifyProvider from "./amplify-provider";
+import AuthenticatorWrapper from "./authenticator-wrapper";
+import "@aws-amplify/ui-react/styles.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -29,13 +30,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className=" absolute ">
+      <AmplifyProvider>
+        <AuthenticatorWrapper>
+        <div>
           <AnimatedBackground />
         </div>
         <main>
           <InspectorShield />
           {children}
         </main>
+          </AuthenticatorWrapper>
+        </AmplifyProvider>
       </body>
     </html>
   );
