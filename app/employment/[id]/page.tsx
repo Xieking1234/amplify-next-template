@@ -80,7 +80,10 @@ export default function EmploymentPage() {
 
         setLoadingInsight(false);
     }
-    const { signOut } = useAuthenticator();
+    const { signOut, authStatus } = useAuthenticator((context) => [context.signOut, context.authStatus]);
+    if (authStatus === 'configuring') {
+        return <div className="p-10 text-white flex justify-center mt-20">Loading Authentication...</div>;
+    }
     return (
         <PageWrapper>
             <div className="fixed top-5 right-5 z-50">
