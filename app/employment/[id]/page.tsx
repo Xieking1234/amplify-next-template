@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
-
+import {useAuthenticator} from "@aws-amplify/ui-react";
 import TextBorderAnimation from "@/components/animata/text/text-border-animation";
 import UnderlineHoverText from "@/components/animata/text/underline-hover-text";
 import PageWrapper from "@/components/animata/pagewrapper/page-wrapper";
@@ -80,9 +80,17 @@ export default function EmploymentPage() {
 
         setLoadingInsight(false);
     }
-
+    const { signOut } = useAuthenticator();
     return (
         <PageWrapper>
+            <div className="fixed top-5 right-5 z-50">
+                <button
+                    onClick={signOut}
+                    className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full hover:bg-red-500/20 hover:border-red-500/50 transition-all text-sm font-medium"
+                >
+                    Sign Out
+                </button>
+            </div>
             <div className="flex justify-center mt-20">
                 <UnderlineHoverText text={uni ?? ""} />
             </div>
