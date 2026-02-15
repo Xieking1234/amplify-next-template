@@ -44,7 +44,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                        text-white rounded-full hover:bg-red-500/20 hover:border-red-500/50 
                        transition-all text-sm font-medium shadow-lg"
               >
-                Sign Out {user?.username}
+                Sign Out
               </button>
             </div>
         )}
