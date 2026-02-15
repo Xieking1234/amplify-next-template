@@ -27,7 +27,14 @@ Employment Data:
 - Study Only: ${employment.studyOnly}
 - Unemployment: ${employment.unemployment}
 - Response Rate: ${employment.responseRate}
-
+dont use characters like | -  ** - ** and dont show many calculations.
+u can use bullet points to define a heading.
+dont make headings like 1. **Employment Landscape** instsed just use 1.and not the **.
+again dont make it like **Friendly Summary** dont use ** in any case, for summary use ➡️.
+u can also use emoji for every heading or point.
+instead of - ** u can use numbered points like 1. 2. and so on.
+u can write longer insights to properly explain the stats.
+stay and act like a very professional consultant for students.
 Provide a clear, friendly summary for a prospective student.
         `;
 

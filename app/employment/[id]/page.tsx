@@ -2,7 +2,7 @@
 
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
@@ -27,6 +27,8 @@ export default function EmploymentPage() {
     const [insight, setInsight] = useState<string | null>(null);
     const [loadingInsight, setLoadingInsight] = useState(false);
 
+    const insightRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         async function fetchRecord() {
             const { data } = await client.models.Employment.get({ id });
@@ -34,6 +36,12 @@ export default function EmploymentPage() {
         }
         fetchRecord();
     }, [id]);
+
+    useEffect(() => {
+        if (insight && insightRef.current) {
+            insightRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }, [insight]);
 
     if (!record) return <div className="p-10">Loading...</div>;
     if (!record.employment) return <div className="p-10">No employment data found</div>;
@@ -125,21 +133,32 @@ export default function EmploymentPage() {
             <div className="flex justify-center mt-16">
                 <button
                     onClick={generateInsight}
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+                    disabled={loadingInsight}
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white rounded-lg transition"
                 >
-                    Generate AI Insight
+                    {loadingInsight ? "Generating..." : "Generate AI Insight"}
                 </button>
             </div>
 
             {/* ⭐ Loading State */}
             {loadingInsight && (
-                <p className="mt-10 text-center text-gray-300">Generating insight...</p>
+                <p className="mt-10 text-center text-gray-300 animate-pulse">
+                    Generating insight...
+                </p>
             )}
 
             {/* ⭐ AI Insight Output */}
             {insight && (
-                <div className="mt-10 mx-auto max-w-3xl p-6 bg-gray-900 text-white rounded-lg shadow-lg">
-                    <h2 className="text-xl font-semibold mb-4">AI Insight</h2>
+                <div
+                    ref={insightRef}
+                    className="mt-10 mx-auto max-w-3xl p-6
+                                rounded-lg shadow-xl mb-20 text-white
+                                backdrop-blur-xl
+                                border border-white/20
+                                bg-gradient-to-br from-white/20 to-white/5"
+
+                >
+                    <h2 className="text-xl font-semibold mb-4 text-blue-400">AI Insight</h2>
                     <p className="leading-relaxed whitespace-pre-line">{insight}</p>
                 </div>
             )}
