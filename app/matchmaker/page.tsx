@@ -23,7 +23,6 @@ import {
     Search
 } from "lucide-react";
 
-// Types matching your simple Amplify + Groq response
 type MatchResult = {
     id: string;
     uniName: string;
@@ -40,18 +39,18 @@ type MatchResult = {
 const STEPS = [
     {
         id: "priority",
-        question: "Define your primary objective",
+        question: "Define your objective",
         sub: "We'll align your choice with specific institutional strengths.",
         options: [
-            { label: "Immediate Employment", icon: Wallet, value: "workOnly", desc: "Focus on high job placement rates" },
+            { label: "Immediate Employment", icon: Wallet, value: "workOnly", desc: "Focus on job placement rates" },
             { label: "Academic Research", icon: BookOpen, value: "studyOnly", desc: "Focus on postgraduate progression" },
             { label: "Professional Growth", icon: Briefcase, value: "balanced", desc: "A mix of industry and learning" },
         ]
     },
     {
         id: "environment",
-        question: "Select your preferred hub",
-        sub: "Regional clusters often dictate industry networking depth.",
+        question: "Select your hub",
+        sub: "Regional clusters often dictate networking depth.",
         options: [
             { label: "Urban Tech Centers", icon: Target, value: "urban", desc: "Metropolitan networking hubs" },
             { label: "Dedicated Campuses", icon: Compass, value: "campus", desc: "Focused research environments" },
@@ -68,7 +67,6 @@ export default function MatchmakerPage() {
     const handleSelect = async (stepId: string, option: any) => {
         const updatedAnswers = { ...answers, [stepId]: option };
         setAnswers(updatedAnswers);
-
         if (currentStep < STEPS.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
@@ -85,9 +83,15 @@ export default function MatchmakerPage() {
                 body: JSON.stringify({ answers: finalAnswers }),
             });
             const data = await response.json();
+
+            if (data.error) {
+                console.error("Match Error:", data.error);
+                return;
+            }
+
             setResult(data);
         } catch (error) {
-            console.error("Match error:", error);
+            console.error("Connection error:", error);
         } finally {
             setIsCalculating(false);
         }
@@ -101,144 +105,126 @@ export default function MatchmakerPage() {
 
     return (
         <PageWrapper>
-            <div className="min-h-screen pt-24 pb-20 px-4 flex flex-col items-center relative">
+            <div className="min-h-screen pt-24 pb-20 px-4 flex flex-col items-center relative overflow-hidden">
 
-                {/* Visual Depth Background */}
-                <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] h-[600px] bg-blue-600/5 blur-[120px] rounded-full -z-10" />
+                {/* Mirror Aesthetic Background Orbs */}
+                <div className="fixed top-[-5%] left-[-5%] w-[40%] h-[40%] bg-blue-200/20 blur-[100px] rounded-full -z-10" />
+                <div className="fixed bottom-[-5%] right-[-5%] w-[40%] h-[40%] bg-indigo-100/20 blur-[100px] rounded-full -z-10" />
 
                 <div className="w-full max-w-2xl relative z-10">
                     <AnimatePresence mode="wait">
                         {!result ? (
                             <motion.div
-                                key="quiz-flow"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.98 }}
-                                className="bg-[#050505] border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+                                key="quiz"
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.02 }}
+                                className="bg-white/10 border border-white/40 backdrop-blur-[40px] rounded-[3rem] p-8 md:p-12 shadow-[0_8px_32px_rgba(0,0,0,0.04)]"
                             >
                                 {isCalculating ? (
                                     <div className="py-24 flex flex-col items-center justify-center text-center">
-                                        <div className="relative mb-8">
-                                            <div className="absolute inset-0 bg-blue-500/20 blur-3xl animate-pulse rounded-full" />
-                                            <Loader2 className="w-14 h-14 text-blue-500 animate-spin relative z-10" />
-                                        </div>
-                                        <h2 className="text-xl font-black text-white uppercase tracking-[0.4em] mb-2">Analyzing Data</h2>
-                                        <p className="text-gray-500 text-sm font-medium">Groq AI is cross-referencing your goals with the database...</p>
+                                        <Loader2 className="w-12 h-12 text-blue-500/50 animate-spin mb-6" />
+                                        <h2 className="text-lg font-bold text-gray-800 uppercase tracking-[0.3em]">Processing</h2>
+                                        <p className="text-gray-400 text-[10px] mt-2 font-medium">Consulting Groq AI Intelligence...</p>
                                     </div>
                                 ) : (
                                     <>
                                         <div className="mb-12">
                                             <div className="flex items-center gap-2 mb-4">
-                                                <div className="h-1 w-12 rounded-full bg-blue-500" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Step {currentStep + 1} of {STEPS.length}</span>
+                                                <div className="h-[2px] w-6 bg-blue-400/50" />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600/60">Module {currentStep + 1}</span>
                                             </div>
-                                            <h2 className="text-4xl font-black text-white mb-3 tracking-tight">{STEPS[currentStep].question}</h2>
+                                            <h2 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">{STEPS[currentStep].question}</h2>
                                             <p className="text-gray-500 text-sm font-medium">{STEPS[currentStep].sub}</p>
                                         </div>
 
-                                        <div className="grid grid-cols-1 gap-4">
+                                        <div className="grid grid-cols-1 gap-3">
                                             {STEPS[currentStep].options.map((option) => (
                                                 <button
                                                     key={option.label}
                                                     onClick={() => handleSelect(STEPS[currentStep].id, option)}
-                                                    className="group flex items-center justify-between p-6 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all"
+                                                    className="group flex items-center justify-between p-5 rounded-2xl bg-white/20 border border-white/40 hover:border-white/80 hover:bg-white/40 transition-all shadow-sm"
                                                 >
-                                                    <div className="flex items-center gap-5">
-                                                        <div className="p-4 rounded-2xl bg-white/[0.03] text-gray-500 group-hover:text-blue-400 transition-colors">
-                                                            <option.icon className="w-6 h-6" />
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="p-3 rounded-xl bg-white/40 text-blue-500 shadow-sm border border-white/50">
+                                                            <option.icon className="w-5 h-5" />
                                                         </div>
                                                         <div className="text-left">
-                                                            <div className="text-lg font-bold text-white group-hover:text-blue-50 transition-colors">{option.label}</div>
-                                                            <div className="text-xs text-gray-500 font-medium">{option.desc}</div>
+                                                            <div className="text-base font-bold text-gray-800">{option.label}</div>
+                                                            <div className="text-[11px] text-gray-400 font-medium">{option.desc}</div>
                                                         </div>
                                                     </div>
-                                                    <ArrowRight className="w-5 h-5 text-gray-800 group-hover:text-blue-500 transition-all" />
+                                                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-all" />
                                                 </button>
                                             ))}
                                         </div>
 
                                         {currentStep > 0 && (
-                                            <button
-                                                onClick={() => setCurrentStep(currentStep - 1)}
-                                                className="mt-10 flex items-center gap-2 text-gray-600 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors"
-                                            >
-                                                <Undo2 className="w-4 h-4" /> Go Back
+                                            <button onClick={() => setCurrentStep(currentStep - 1)} className="mt-8 flex items-center gap-2 text-gray-400 hover:text-gray-600 text-[10px] font-black uppercase tracking-widest transition-all">
+                                                <Undo2 className="w-3 h-3" /> Back
                                             </button>
                                         )}
                                     </>
                                 )}
                             </motion.div>
                         ) : (
-                            /* THE RESULT PAGE */
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="space-y-6 w-full"
-                            >
-                                <div className="bg-[#050505] border border-white/10 rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-                                        <Fingerprint size={200} />
-                                    </div>
-
+                            /* THE MIRROR RESULT PAGE */
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 w-full">
+                                <div className="bg-white/10 border border-white/50 backdrop-blur-[50px] rounded-[3.5rem] p-10 md:p-14 shadow-2xl relative">
                                     <div className="relative z-10">
                                         <div className="flex items-center gap-3 mb-10">
-                                            <div className="px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest">
-                                                Optimal Match: {result.score}%
+                                            <div className="px-3 py-1 rounded-full bg-white/30 border border-white/50 text-blue-600 text-[9px] font-black uppercase tracking-widest">
+                                                Match Probability: {result.score}%
                                             </div>
-                                            <Stars className="text-yellow-500 w-4 h-4 animate-pulse" />
+                                            <Stars className="text-blue-400/40 w-4 h-4" />
                                         </div>
 
-                                        <h3 className="text-5xl md:text-6xl font-black text-white mb-2 tracking-tighter leading-[0.9]">
-                                            {result.uniName}
-                                        </h3>
+                                        <h3 className="text-5xl font-black text-gray-900 mb-2 tracking-tighter leading-none">{result.uniName}</h3>
                                         <div className="flex items-center gap-2 text-gray-500 font-bold text-sm mb-12">
-                                            <MapPin className="w-4 h-4 text-blue-500" /> {result.uniCourse}
+                                            <MapPin className="w-4 h-4 text-blue-400/60" /> {result.uniCourse}
                                         </div>
 
-                                        {/* AI Analysis Container */}
-                                        <div className="p-8 bg-blue-500/[0.03] border border-blue-500/10 rounded-[2.5rem] mb-12 text-gray-300 leading-relaxed text-sm whitespace-pre-wrap font-medium">
-                                            <div className="flex items-center gap-2 text-blue-400 font-black text-[10px] uppercase tracking-widest mb-4">
-                                                <Sparkles size={14} /> AI Consultant Insight
+                                        {/* Transparent Insight Box */}
+                                        <div className="p-8 bg-white/10 border border-white/30 rounded-[2.5rem] mb-12 text-gray-600 leading-relaxed text-sm whitespace-pre-wrap font-medium ring-1 ring-white/20 shadow-inner">
+                                            <div className="flex items-center gap-2 text-blue-600/70 font-black text-[10px] uppercase tracking-widest mb-4">
+                                                <Sparkles size={14} /> AI Analysis
                                             </div>
                                             {result.reason}
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4 mb-12">
-                                            <div className="bg-white/[0.02] rounded-2xl p-6 border border-white/5 text-center">
-                                                <div className="text-[10px] font-bold text-gray-600 uppercase mb-2 tracking-widest">Employment</div>
-                                                <div className="text-3xl font-black text-white">{result.employment?.workOnly || "N/A"}</div>
+                                            <div className="bg-white/20 rounded-3xl p-6 border border-white/40 text-center shadow-sm backdrop-blur-md">
+                                                <div className="text-[9px] font-black text-gray-400 uppercase mb-2 tracking-widest">Employment</div>
+                                                <div className="text-3xl font-black text-gray-800">{result.employment?.workOnly || "N/A"}</div>
                                             </div>
-                                            <div className="bg-white/[0.02] rounded-2xl p-6 border border-white/5 text-center">
-                                                <div className="text-[10px] font-bold text-gray-600 uppercase mb-2 tracking-widest">Unemployment</div>
-                                                <div className="text-3xl font-black text-red-500/80">{result.employment?.unemployment || "N/A"}</div>
+                                            <div className="bg-white/20 rounded-3xl p-6 border border-white/40 text-center shadow-sm backdrop-blur-md">
+                                                <div className="text-[9px] font-black text-gray-400 uppercase mb-2 tracking-widest">Postgrad</div>
+                                                <div className="text-3xl font-black text-blue-500/60">{result.employment?.studyOnly || "N/A"}</div>
                                             </div>
                                         </div>
 
-                                        {/* Button Grid */}
-                                        <div className="flex flex-col gap-4">
-                                            {/* Primary Navigation */}
+                                        {/* Light Mirror Actions */}
+                                        <div className="flex flex-col gap-3">
                                             <Link
                                                 href={`/employment/${result.id}`}
-                                                className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-center hover:bg-blue-500 transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-[0.2em] shadow-[0_0_30px_rgba(37,99,235,0.2)]"
+                                                className="w-full py-5 bg-blue-500 text-white rounded-[2rem] font-black text-center hover:bg-blue-600 transition-all flex items-center justify-center gap-2 uppercase text-[10px] tracking-[0.2em] shadow-lg shadow-blue-200"
                                             >
                                                 Intelligence Report <ExternalLink className="w-4 h-4" />
                                             </Link>
 
-                                            <div className="flex flex-col sm:flex-row gap-4">
-                                                {/* Check More Button */}
+                                            <div className="flex flex-col sm:flex-row gap-3">
                                                 <Link
                                                     href={`/employment/${result.id}`}
-                                                    className="flex-1 py-5 bg-white/[0.05] border border-white/10 text-white rounded-2xl font-black hover:bg-white/[0.1] transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-[0.1em]"
+                                                    className="flex-1 py-4 bg-white/30 border border-white/50 text-gray-700 rounded-[2rem] font-black hover:bg-white/50 transition-all flex items-center justify-center gap-2 uppercase text-[10px] tracking-[0.1em]"
                                                 >
-                                                    <Search className="w-4 h-4 text-blue-400" /> Check More
+                                                    <Search className="w-3 h-3 text-blue-400" /> Check More
                                                 </Link>
 
-                                                {/* Restart Button */}
                                                 <button
                                                     onClick={resetQuiz}
-                                                    className="flex-1 py-5 bg-white/[0.02] border border-white/5 text-gray-500 rounded-2xl font-black hover:bg-red-500/10 hover:text-red-400 transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-[0.1em]"
+                                                    className="flex-1 py-4 bg-white/10 border border-white/20 text-gray-400 rounded-[2rem] font-black hover:bg-red-50/50 hover:text-red-400 transition-all flex items-center justify-center gap-2 uppercase text-[10px] tracking-[0.1em]"
                                                 >
-                                                    <RefreshCcw className="w-4 h-4" /> New Search
+                                                    <RefreshCcw className="w-3 h-3" /> New Search
                                                 </button>
                                             </div>
                                         </div>

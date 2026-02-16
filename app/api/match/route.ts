@@ -1,5 +1,10 @@
 import { generateClient } from "aws-amplify/data";
+import { Amplify } from "aws-amplify";
 import { type Schema } from "@/amplify/data/resource";
+import outputs from "@/amplify_outputs.json";
+
+// Manually configure Amplify for the server-side environment
+Amplify.configure(outputs);
 
 // Simple client initialization
 const client = generateClient<Schema>({ authMode: "apiKey" });
@@ -9,6 +14,7 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { answers } = body;
 
+        // Load Groq API key from environment variables
         const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) {
             return Response.json({ error: "API Key missing" }, { status: 500 });
@@ -21,7 +27,7 @@ export async function POST(req: Request) {
             return Response.json({ error: "No data found" }, { status: 404 });
         }
 
-        // 2. Map data for AI context (keeping it small)
+        // 2. Map data for AI context (keeping it focused)
         const uniContext = allRecords.map(u => ({
             id: u.id,
             name: u.uniName,
@@ -64,7 +70,7 @@ Use emojis for these 3 numbered points: 1. Match 🏆 2. Strategy 🎯 3. Future
         const aiResponse = JSON.parse(json.choices[0].message.content);
 
         // 4. Find the matching record
-        const winningUni = allRecords.find(u => u.id === aiResponse.id);
+        const winningUni = allRecords.find(u => u.id === aiResponse.id) || allRecords[0];
 
         return Response.json({
             ...winningUni,
