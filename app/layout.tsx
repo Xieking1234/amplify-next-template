@@ -5,7 +5,7 @@ import "./globals.css";
 import AmplifyProvider from "./amplify-provider";
 import AuthenticatorWrapper from "./authenticator-wrapper";
 import "@aws-amplify/ui-react/styles.css";
-
+import InspectorShield from "@/components/inspectorshield"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -22,12 +22,14 @@ export const metadata: Metadata = {
 
 
 };
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
       <html lang="en">
       <body className={inter.className}>
       <AmplifyProvider>
         <AuthenticatorWrapper>
+           <InspectorShield/>
           <LayoutContent>{children}</LayoutContent>
         </AuthenticatorWrapper>
       </AmplifyProvider>
