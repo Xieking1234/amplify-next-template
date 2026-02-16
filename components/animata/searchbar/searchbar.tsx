@@ -49,10 +49,9 @@ export default function SearchDropdown() {
                 onChange={(e) => setQuery(e.target.value)}
                 className="
         w-full p-3
-        bg-white text-black
-        border border-gray-300
-        rounded-lg shadow-md
-        focus:outline-none focus:ring-2 focus:ring-blue-500
+        px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20
+                       text-white rounded-full hover:bg-red-500/20 hover:border-red-500/50
+                       transition-all text-sm font-medium shadow-lg
     "
 
             />
