@@ -1,7 +1,7 @@
 "use client"
 import {useAuthenticator} from "@aws-amplify/ui-react";
 import {useEffect, useRef, useState} from "react";
-import {ChevronDown, LayoutDashboard, LogOut, Scale} from "lucide-react";
+import {ChevronDown, LayoutDashboard, LogOut, Scale, BrainCircuit} from "lucide-react";
 import Link from "next/link";
 import AnimatedBackground from "@/components/animata/background/animated-background";
 
@@ -62,7 +62,16 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
                                 <Scale className="w-4 h-4 text-yellow-400" />
                                 Compare
                             </Link>
+                            <Link
+                                href="/matchmaker"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-white/10 transition-colors"
+                            >
+                                <BrainCircuit className="w-4 h-4 text-purple-500" />
+                                Ai Quiz Matchmaking
+                            </Link>
 
+                            <hr className="my-2 border-white/10" />
                             <hr className="my-2 border-white/10" />
 
                             <button
