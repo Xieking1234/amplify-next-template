@@ -124,11 +124,33 @@ export default function RankingsPage() {
 
     const downloadImage = async () => {
         if (!downloadRef.current) return;
-        const dataUrl = await toPng(downloadRef.current, { cacheBust: true, backgroundColor: '#030712' });
-        const link = document.createElement('a');
-        link.download = `Comparison-Report.png`;
-        link.href = dataUrl;
-        link.click();
+
+        try {
+            // 1. Capture the full dimensions of the content, even the scrollable parts
+            const width = downloadRef.current.scrollWidth;
+            const height = downloadRef.current.scrollHeight;
+
+            const dataUrl = await toPng(downloadRef.current, {
+                cacheBust: true,
+                backgroundColor: '#030712',
+                // 2. Force the canvas to the full size of the content
+                width: width,
+                height: height,
+                style: {
+                    // 3. Reset any temporary styles that might interfere during capture
+                    overflow: 'visible',
+                    width: `${width}px`,
+                    height: `${height}px`,
+                }
+            });
+
+            const link = document.createElement('a');
+            link.download = `Comparison-Report.png`;
+            link.href = dataUrl;
+            link.click();
+        } catch (err) {
+            console.error('Failed to export image:', err);
+        }
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="w-10 h-10 text-blue-500 animate-spin" /></div>;
