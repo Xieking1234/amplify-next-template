@@ -1,92 +1,58 @@
 "use client"
-import {useAuthenticator} from "@aws-amplify/ui-react";
-import {useEffect, useRef, useState} from "react";
-import {ChevronDown, LayoutDashboard, LogOut, Scale, BrainCircuit} from "lucide-react";
+import { useAuthenticator } from "@aws-amplify/ui-react";
+import { LayoutDashboard, LogOut, Scale, BrainCircuit, Home } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import AnimatedBackground from "@/components/animata/background/animated-background";
 
-
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
-    const { signOut, user, authStatus } = useAuthenticator((context) => [
-        context.user,
+    const { signOut, authStatus } = useAuthenticator((context) => [
         context.authStatus,
     ]);
+    const pathname = usePathname();
 
-    const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    const navLinks = [
+        { href: "/", label: "Home", icon: Home, color: "text-blue-400" },
+        { href: "/rankings", label: "Compare", icon: Scale, color: "text-yellow-400" },
+        { href: "/matchmaker", label: "AI Matchmaker", icon: BrainCircuit, color: "text-purple-400" },
+    ];
 
     return (
         <>
-            {/* ⭐ Dropdown Navigation: Only visible if authenticated */}
+            {/* ⭐ Top Navigation Bar */}
             {authStatus === "authenticated" && (
-                <div className="fixed top-5 right-5 z-[100]" ref={dropdownRef}>
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20
-                       text-white rounded-full hover:bg-white/20 transition-all text-sm font-medium shadow-lg"
-                    >
-                        <span>Features</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                    </button>
+                <header className="fixed top-6 left-0 right-0 z-[100] px-4">
+                    <nav className="max-w-fit mx-auto flex items-center gap-1 p-1.5 bg-white/10 backdrop-blur-[20px] border border-white/30 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.05)]">
 
-                    {/* Dropdown Menu */}
-                    {isOpen && (
-                        <div className="absolute right-0 mt-2 w-48 py-2 bg-gray-900/90 backdrop-blur-xl border border-white/20
-                            rounded-xl shadow-2xl animate-in fade-in zoom-in duration-200">
+                        {navLinks.map((link) => {
+                            const isActive = pathname === link.href;
+                            return (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all uppercase tracking-widest
+                                        ${isActive
+                                        ? "bg-white/40 text-gray-900 shadow-sm"
+                                        : "text-gray-600 hover:bg-white/20 hover:text-gray-900"
+                                    }`}
+                                >
+                                    <link.icon className={`w-4 h-4 ${isActive ? link.color : "text-gray-400"}`} />
+                                    <span className="hidden sm:inline">{link.label}</span>
+                                </Link>
+                            );
+                        })}
 
-                            <Link
-                                href="/"
-                                onClick={() => setIsOpen(false)}
-                                className="flex items-center gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-white/10 transition-colors"
-                            >
-                                <LayoutDashboard className="w-4 h-4 text-blue-400" />
-                                Home
-                            </Link>
+                        <div className="w-[1px] h-4 bg-white/30 mx-2" />
 
-                            <Link
-                                href="/rankings"
-                                onClick={() => setIsOpen(false)}
-                                className="flex items-center gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-white/10 transition-colors"
-                            >
-                                <Scale className="w-4 h-4 text-yellow-400" />
-                                Compare
-                            </Link>
-                            <Link
-                                href="/matchmaker"
-                                onClick={() => setIsOpen(false)}
-                                className="flex items-center gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-white/10 transition-colors"
-                            >
-                                <BrainCircuit className="w-4 h-4 text-purple-500" />
-                                Ai Quiz Matchmaking
-                            </Link>
-
-                            <hr className="my-2 border-white/10" />
-                            <hr className="my-2 border-white/10" />
-
-                            <button
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    signOut();
-                                }}
-                                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors text-left"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                Sign Out
-                            </button>
-                        </div>
-                    )}
-                </div>
+                        <button
+                            onClick={() => signOut()}
+                            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-red-500/70 hover:bg-red-500/10 transition-all uppercase tracking-widest"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            <span className="hidden sm:inline">SignOut</span>
+                        </button>
+                    </nav>
+                </header>
             )}
 
             <div className="fixed inset-0 -z-10">
