@@ -1,47 +1,58 @@
-import { NextRequest, NextResponse } from "next/server";
 import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-// Import your amplify_outputs if needed for server-side config
-// import outputs from "@/amplify_outputs.json";
+import { type Schema } from "@/amplify/data/resource";
 
+// Simple client initialization
 const client = generateClient<Schema>({ authMode: "apiKey" });
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
     try {
-        const { answers } = await req.json();
+        const body = await req.json();
+        const { answers } = body;
 
-        // 1. Fetch real data from Amplify
-        const { data: allUnis } = await client.models.Employment.list();
+        const apiKey = process.env.GROQ_API_KEY;
+        if (!apiKey) {
+            return Response.json({ error: "API Key missing" }, { status: 500 });
+        }
 
-        // 2. Prepare the prompt for the AI
-        // We send a subset of data to stay within token limits
-        const uniContext = allUnis.map(u => ({
+        // 1. Fetch raw data from Amplify
+        const { data: allRecords } = await client.models.Employment.list();
+
+        if (!allRecords || allRecords.length === 0) {
+            return Response.json({ error: "No data found" }, { status: 404 });
+        }
+
+        // 2. Map data for AI context (keeping it small)
+        const uniContext = allRecords.map(u => ({
             id: u.id,
             name: u.uniName,
             course: u.uniCourse,
-            employment: u.employment?.workOnly,
-            unemployment: u.employment?.unemployment,
-            study: u.employment?.studyOnly
+            work: u.employment?.workOnly,
+            study: u.employment?.studyOnly,
         }));
 
         const prompt = `
-            Act as a University Career Consultant. 
-            User Preferences: ${JSON.stringify(answers)}
-            Available University Data: ${JSON.stringify(uniContext)}
+You are a professional student consultant. Find the best university match.
+Student Goal: ${answers.priority?.label}
+Setting: ${answers.environment?.label}
 
-            Based on the user's goal (e.g., high salary vs further study), identify the TOP 3 matches.
-            Return ONLY a JSON object with this structure:
-            {
-                "topMatch": { "id": "...", "reason": "...", "score": 98 },
-                "alternatives": [{ "id": "...", "score": 92 }, { "id": "...", "score": 88 }]
-            }
+Database:
+${JSON.stringify(uniContext.slice(0, 20))} 
+
+Return ONLY a JSON object: {"id": "MATCH_ID", "score": 98, "insight": "Summary and 3 points"}
+
+Rules:
+No bold text. No special characters like ** or |. 
+Use ➡️ for summary. 
+Use emojis for these 3 numbered points: 1. Match 🏆 2. Strategy 🎯 3. Future 🚀.
         `;
 
-        // 3. Call your AI Model (e.g., OpenAI or Bedrock)
-        // This is a placeholder for your AI call logic
-        const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        // 3. Groq Call
+        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
-            headers: { "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
                 messages: [{ role: "user", content: prompt }],
@@ -49,19 +60,20 @@ export async function POST(req: NextRequest) {
             })
         });
 
-        const result = await aiResponse.json();
-        const recommendation = JSON.parse(result.choices[0].message.content);
+        const json = await groqRes.json();
+        const aiResponse = JSON.parse(json.choices[0].message.content);
 
-        // 4. Enrich recommendation with full DB data
-        const enrichedTopMatch = {
-            ...allUnis.find(u => u.id === recommendation.topMatch.id),
-            reason: recommendation.topMatch.reason,
-            score: recommendation.topMatch.score
-        };
+        // 4. Find the matching record
+        const winningUni = allRecords.find(u => u.id === aiResponse.id);
 
-        return NextResponse.json(enrichedTopMatch);
-    } catch (error) {
-        console.error("Match Error:", error);
-        return NextResponse.json({ error: "Failed to match" }, { status: 500 });
+        return Response.json({
+            ...winningUni,
+            score: aiResponse.score,
+            reason: aiResponse.insight
+        });
+
+    } catch (err: any) {
+        console.error("Match Error:", err);
+        return Response.json({ error: "Internal error" }, { status: 500 });
     }
 }
