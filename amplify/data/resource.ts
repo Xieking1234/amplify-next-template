@@ -22,19 +22,16 @@ const schema = a.schema({
       }),
 
     })
-    .authorization((allow) => [allow.publicApiKey()]),
+    .authorization((allow) => [allow.authenticated()])
 });
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
-  schema,
-  authorizationModes: {
-    defaultAuthorizationMode: "apiKey",
-    apiKeyAuthorizationMode: {
-      expiresInDays: 30,
+    schema,
+    authorizationModes: {
+        defaultAuthorizationMode: "userPool",
     },
-  },
 });
 
 /*== STEP 2 ===============================================================

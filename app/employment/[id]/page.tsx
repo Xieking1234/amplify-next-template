@@ -14,7 +14,7 @@ import CalorieCounter from "@/components/animata/graphs/calorie-counter";
 Amplify.configure(outputs);
 
 const client = generateClient<Schema>({
-    authMode: "apiKey",
+    authMode: "userPool"
 });
 
 export default function EmploymentPage() {

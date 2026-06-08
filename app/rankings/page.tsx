@@ -12,7 +12,9 @@ import {
 } from "lucide-react";
 import { toPng } from 'html-to-image';
 
-const client = generateClient<Schema>({ authMode: "apiKey" });
+const client = generateClient<Schema>({
+    authMode: "userPool"
+});
 
 const toNumber = (value?: string | null) =>
     value ? Number(value.replace("%", "")) : 0;
